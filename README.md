@@ -1,55 +1,57 @@
 # HSC Discovery DHCP scopes - HSC
 
-## Overview
+## Обзор
 
-Este template foi elaborado para o monitoramento de escopos dhcp de servidores Microsoft Windows em PT-BR.
+Этот шаблон подготовлен для мониторинга областей DHCP серверов Microsoft Windows (PT-BR).
 
+Оповещение, если служба DHCP не выполняется.
+Предупреждение, если свободных адресов в области меньше `{$DHCP.FREE.WARN}`.
+Критическое событие, если свободных адресов в области меньше `{$DHCP.FREE.CRIT}`.
 
- 
+## Автор
 
+Основовано на community шаблоне [William Normandia](https://github.com/zabbix/community-templates/tree/main/Operating_Systems/template_escopo_dhcp_e_estatisticas)
 
-Nele existe um gatilho para o envio de alertas para escopos com menos de 15 ips livres.
+## Используемые макросы
 
+|Имя|Описание|Значение|
+|----|-----------|--------|
+|`{$DHCP.FREE.WARN}`|Порог предупреждения: число свободных адресов в области DHCP меньше этого значения.|20|
+|`{$DHCP.FREE.CRIT}`|Критический порог: число свободных адресов в области DHCP меньше этого значения.|5|
 
+Порог предупреждения должен быть больше критического.
 
-## Author
+## Связанные шаблоны
 
-William Normandia
+У этого шаблона нет связанных шаблонов.
 
-## Macros used
+## Правила обнаружения
 
-There are no macros links in this template.
-
-## Template links
-
-There are no template links in this template.
-
-## Discovery rules
-
-|Name|Description|Type|Key and additional info|
+|Имя|Описание|Тип|Ключ и дополнительная информация|
 |----|-----------|----|----|
-|DHCP scopes|<p>-</p>|`SNMP agent`|dhcp.scope<p>Update: 60</p>|
+|DHCP scopes|<p>-</p>|`SNMP агент`|dhcp.scope<p>Обновление: 60</p>|
 
 
-## Items collected
+## Собираемые элементы данных
 
-|Name|Description|Type|Key and additional info|
+|Имя|Описание|Тип|Ключ и дополнительная информация|
 |----|-----------|----|----|
-|parDhcpTotalNoOfNacks|<p>-</p>|`SNMP agent`|1.3.6.1.4.1.311.1.3.1.7<p>Update: 60</p>|
-|parDhcpTotalNoOfReleases|<p>-</p>|`SNMP agent`|1.3.6.1.4.1.311.1.3.1.4<p>Update: 60</p>|
-|parDhcpTotalNoOfRequests|<p>-</p>|`SNMP agent`|1.3.6.1.4.1.311.1.3.1.3<p>Update: 60</p>|
-|Status Serviço DHCP|<p>0 - em execução, 1 - pausado, 2 - iniciação pendente, 3 - pausa pendente, 4 - retorno pendente, 5 - finalização pendente, 6 - finalizado, 7 - desconhecido, 255 - serviço desconhecido</p>|`Zabbix agent`|service.info[DHCPServer]<p>Update: 60</p>|
-|parDhcpTotalNoOfAcks|<p>-</p>|`SNMP agent`|1.3.6.1.4.1.311.1.3.1.6<p>Update: 60</p>|
-|parDhcpTotalNoOfOffers|<p>-</p>|`SNMP agent`|1.3.6.1.4.1.311.1.3.1.5<p>Update: 60</p>|
-|parDhcpTotalNoOfDeclines|<p>-</p>|`SNMP agent`|1.3.6.1.4.1.311.1.3.1.8<p>Update: 60</p>|
-|parDhcpTotalNoOfDiscovers|<p>-</p>|`SNMP agent`|1.3.6.1.4.1.311.1.3.1.2<p>Update: 60</p>|
-|Number of addresses that are free on scope {#IPSCOPE}|<p>-</p>|`SNMP agent`|ipfree[{#IPSCOPE}]<p>Update: 60</p><p>LLD</p>|
-|Number of addresses that are use on scope {#IPSCOPE}|<p>-</p>|`SNMP agent`|ipuse[{#IPSCOPE}]<p>Update: 60</p><p>LLD</p>|
+|parDhcpTotalNoOfDiscovers|<p>-</p>|`SNMP агент`|1.3.6.1.4.1.311.1.3.1.2<p>Обновление: 60</p>|
+|parDhcpTotalNoOfRequests|<p>-</p>|`SNMP агент`|1.3.6.1.4.1.311.1.3.1.3<p>Обновление: 60</p>|
+|parDhcpTotalNoOfReleases|<p>-</p>|`SNMP агент`|1.3.6.1.4.1.311.1.3.1.4<p>Обновление: 60</p>|
+|parDhcpTotalNoOfOffers|<p>-</p>|`SNMP агент`|1.3.6.1.4.1.311.1.3.1.5<p>Обновление: 60</p>|
+|parDhcpTotalNoOfAcks|<p>-</p>|`SNMP агент`|1.3.6.1.4.1.311.1.3.1.6<p>Обновление: 60</p>|
+|parDhcpTotalNoOfNacks|<p>-</p>|`SNMP агент`|1.3.6.1.4.1.311.1.3.1.7<p>Обновление: 60</p>|
+|parDhcpTotalNoOfDeclines|<p>-</p>|`SNMP агент`|1.3.6.1.4.1.311.1.3.1.8<p>Обновление: 60</p>|
+|Статус сервиса DHCP|<p>0 — выполняется, 1 — приостановлена, 2 — ожидание запуска, 3 — ожидание приостановки, 4 — ожидание продолжения, 5 — ожидание остановки, 6 — остановлена, 7 — неизвестно, 255 — служба неизвестна</p>|`Zabbix агент`|service.info[DHCPServer]<p>Обновление: 60</p>|
+|Количество свободных адресов в области {#IPSCOPE}|<p>-</p>|`SNMP агент`|ipfree[{#IPSCOPE}]<p>Обновление: 60</p><p>LLD</p>|
+|Количество используемых адресов в области {#IPSCOPE}|<p>-</p>|`SNMP агент`|ipuse[{#IPSCOPE}]<p>Обновление: 60</p><p>LLD</p>|
 
 
-## Triggers
+## Триггеры
 
-|Name|Description|Expression|Priority|
+|Имя|Описание|Выражение|Важность|
 |----|-----------|----------|--------|
-|The number of addresses that are free on scope {#IPSCOPE} is low = {ITEM.VALUE}.|<p>If the number of free adresses is less than 5, the trigger will be activated.</p>|<p>**Expression**: last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])<15</p><p>**Recovery expression**: </p>|high|
-|The number of addresses that are free on scope {#IPSCOPE} is low = {ITEM.VALUE}. (LLD)|<p>If the number of free adresses is less than 5, the trigger will be activated.</p>|<p>**Expression**: last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])<15</p><p>**Recovery expression**: </p>|high|
+|Служба DHCP на {HOST.NAME} не выполняется|<p>Триггер срабатывает, если статус службы DHCPServer не равен 0 (служба не выполняется).</p>|<p>**Выражение**: last(/HSC Discovery DHCP scopes - HSC/service.info[DHCPServer])<>0</p><p>**Выражение восстановления**: </p>|высокая|
+|Критически мало свободных адресов в области {#IPSCOPE} = {ITEM.VALUE}.|<p>Триггер срабатывает, если число свободных адресов в области меньше {$DHCP.FREE.CRIT}.</p>|<p>**Выражение**: last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])&lt;{$DHCP.FREE.CRIT}</p><p>**Выражение восстановления**: </p>|высокая|
+|Мало свободных адресов в области {#IPSCOPE} = {ITEM.VALUE}.|<p>Триггер срабатывает, если число свободных адресов в области меньше {$DHCP.FREE.WARN}. Зависит от критического триггера: пока критический в состоянии PROBLEM, предупреждение не поднимается.</p>|<p>**Выражение**: last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])&lt;{$DHCP.FREE.WARN}</p><p>**Выражение восстановления**: </p>|предупреждение|

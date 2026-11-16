@@ -11,26 +11,29 @@ zabbix_export:
       template: 'HSC Discovery DHCP scopes - HSC'
       name: 'HSC Discovery DHCP scopes - HSC'
       description: |
-        ## Overview
-        
-        Este template foi elaborado para o monitoramento de escopos dhcp de servidores Microsoft Windows em PT-BR.
-        
-        
-         
-        
-        
-        Nele existe um gatilho para o envio de alertas para escopos com menos de 15 ips livres.
-        
-        
-        
-        ## Author
-        
-        William Normandia
-        
-        
+        ## Обзор
+
+        Этот шаблон подготовлен для мониторинга областей DHCP серверов Microsoft Windows (PT-BR).
+
+        Оповещение, если служба DHCP не выполняется.
+        Предупреждение, если свободных адресов в области меньше {$DHCP.FREE.WARN}.
+        Критическое событие, если свободных адресов в области меньше {$DHCP.FREE.CRIT}.
+
+        ## Автор
+
+        Основовано на community шаблоне William Normandia (template_escopo_dhcp_e_estatisticas)
       groups:
         -
           name: 'HSC Hosts'
+      macros:
+        -
+          macro: '{$DHCP.FREE.WARN}'
+          value: '20'
+          description: 'Порог предупреждения: число свободных адресов в области DHCP меньше этого значения.'
+        -
+          macro: '{$DHCP.FREE.CRIT}'
+          value: '5'
+          description: 'Критический порог: число свободных адресов в области DHCP меньше этого значения.'
       items:
         -
           uuid: e9ec53768d4947029ff2126e7fba4ee7
@@ -118,20 +121,20 @@ zabbix_export:
               value: DHCP
         -
           uuid: 3f15ca2cdcdf48689b9911962c53015d
-          name: 'Status Serviço DHCP'
+          name: 'Статус сервиса DHCP'
           key: 'service.info[DHCPServer]'
           delay: '60'
           history: 7d
           description: |
-            0 - em execução,
-            1 - pausado,
-            2 - iniciação pendente,
-            3 - pausa pendente,
-            4 - retorno pendente,
-            5 - finalização pendente,
-            6 - finalizado,
-            7 - desconhecido,
-            255 - serviço desconhecido
+            0 - выполняется,
+            1 - приостановлена,
+            2 - ожидание запуска,
+            3 - ожидание приостановки,
+            4 - ожидание продолжения,
+            5 - ожидание остановки,
+            6 - остановлена,
+            7 - неизвестно,
+            255 - служба неизвестна
           tags:
             -
               tag: Application
@@ -140,8 +143,9 @@ zabbix_export:
             -
               uuid: 1231b33065ca45fdb4b385fca90e70ed
               expression: 'last(/HSC Discovery DHCP scopes - HSC/service.info[DHCPServer])<>0'
-              name: 'Serviço DHCP em {HOST.NAME}'
+              name: 'Служба DHCP на {HOST.NAME} не выполняется'
               priority: HIGH
+              description: 'Триггер срабатывает, если статус службы DHCPServer не равен 0 (служба не выполняется).'
       discovery_rules:
         -
           uuid: 127c5cabaf2f447fad5b2c2abeb7f49b
@@ -153,7 +157,7 @@ zabbix_export:
           item_prototypes:
             -
               uuid: 61447d0b70484af79842fd14854d1126
-              name: 'Number of addresses that are free on scope {#IPSCOPE}'
+              name: 'Количество свободных адресов в области {#IPSCOPE}'
               type: SNMP_AGENT
               snmp_oid: 'SNMPv2-SMI::enterprises.311.1.3.2.1.1.3.{#IPSCOPE}'
               key: 'ipfree[{#IPSCOPE}]'
@@ -166,13 +170,23 @@ zabbix_export:
               trigger_prototypes:
                 -
                   uuid: 7c818712e6d648568d9cf6c2096c93d5
-                  expression: 'last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])<15'
-                  name: 'The number of addresses that are free on scope {#IPSCOPE} is low = {ITEM.VALUE}.'
+                  expression: 'last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])<{$DHCP.FREE.CRIT}'
+                  name: 'Критически мало свободных адресов в области {#IPSCOPE} = {ITEM.VALUE}.'
                   priority: HIGH
-                  description: 'If the number of free adresses is less than 5, the trigger will be activated.'
+                  description: 'Триггер срабатывает, если число свободных адресов в области меньше {$DHCP.FREE.CRIT}.'
+                -
+                  uuid: 9b2e4f17c8a64d0e91f3a6b5c7d8e0f1
+                  expression: 'last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])<{$DHCP.FREE.WARN}'
+                  name: 'Мало свободных адресов в области {#IPSCOPE} = {ITEM.VALUE}.'
+                  priority: WARNING
+                  description: 'Триггер срабатывает, если число свободных адресов в области меньше {$DHCP.FREE.WARN}.'
+                  dependencies:
+                    -
+                      name: 'Критически мало свободных адресов в области {#IPSCOPE} = {ITEM.VALUE}.'
+                      expression: 'last(/HSC Discovery DHCP scopes - HSC/ipfree[{#IPSCOPE}])<{$DHCP.FREE.CRIT}'
             -
               uuid: 7e49033f92ed4cf28bbc8ff539b51ca4
-              name: 'Number of addresses that are use on scope {#IPSCOPE}'
+              name: 'Количество используемых адресов в области {#IPSCOPE}'
               type: SNMP_AGENT
               snmp_oid: 'SNMPv2-SMI::enterprises.311.1.3.2.1.1.2.{#IPSCOPE}'
               key: 'ipuse[{#IPSCOPE}]'
